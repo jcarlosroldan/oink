@@ -1,9 +1,5 @@
 RewriteEngine On
-RewriteBase /examples/blog/
-
-# Redirect all traffic to index.php, excluding files or directories that actually exist
+RewriteBase /examples/basic/
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
-
-# Rewrite all requests to index.php
 RewriteRule ^ index.php [L,QSA]
