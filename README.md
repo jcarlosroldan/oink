@@ -55,7 +55,7 @@ Let's see what's happening here:
 * **Parameters:** In the endpoints file, the request parameters are read by calling functions with type names. For instance, calling `str("tag", optional: true)` will read the `tag` parameter, ensure it's a string, and return its value or `null` if it's not present. Since the endpoints are method-agnostic, the parameters can come as form data, JSON, cookies or even headers. By default, GET parameters are not allowed (since parameters are unaware fo the request method, this could lead to CSRF attacks), but you can enable them by passing `allow_get: true` to `serve`.
 * **Response:** The requests always return a JSON object or array returned by the endpoint function. If the function doesn't return anything, it will return `{"success": true}`. If a parameter validation fails or if a `check` is evaluated to false, it will return a 400 error with `{"error": "reason"}`. If an exception is thrown, it will return a 500 error.
 
-To know more about the usage, check out the [documentation](reference.md) or the [examples](examples/).
+To know more about the usage, check out the [documentation](documentation.md) or the [examples](examples/).
 
 ## Contributing
 
@@ -67,4 +67,4 @@ If you want to contribute to Oink, you can do so by forking the repository and c
 
 ## Why Oink?
 
-Oink should feel like a pig in the mud: simple and comfortable, even though it's not the cleanest thing in the world. Some of the practices followed by this library (such as merging POST parameters, headers and cookies into a single space) are highly non-standard and laser-focused in development speed. If you are looking for a highly customizable, modular and scalable solution, you should look for a full-featured framework like Laravel, Symfony or Lumen. Oink is intended for small projects, prototypes, or as a quick way to create a JSON API for your existing project.
+Oink should feel like a pig in the mud: simple and comfortable, even though it's not the cleanest thing in the world. Some of the practices followed by this library (such as merging POST parameters, headers and cookies into a single space) are highly non-standard and very focused in development speed. If you are looking for a highly customizable, modular and scalable solution, you should look for a full-featured framework like Laravel, Symfony or Lumen.
