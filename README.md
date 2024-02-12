@@ -6,20 +6,20 @@ Oink is a free and open source JSON API wrapper for PHP. It's a single file that
 
 You can install Oink by downloading the `oink.php` file and including it in your project. As part of the extreme minimalistic philosophy of Oink, there is not even a composer package for it.
 
-You should have PHP 8.0 or later installed in your system, as it makes use of [named arguments](https://www.php.net/manual/en/functions.arguments.php#functions.named-arguments). 
+This project is compatible with PHP 8.0 or later. It probably works with previous versions, although it haven't been tested and some functionalities like [named arguments](https://www.php.net/manual/en/functions.arguments.php#functions.named-arguments) will not be available.
 
 ## Basic usage
 
-Just include `oink.php` and call the `serve` method from the `Oink` namespace, passing a reference to the PHP file where your endpoints are defined.
+Include **oink.php** and call `serve` method from the `Oink` namespace with a reference to your endpoints.
 
-index.php
+**index.php**
 ```php
 include_once 'oink.php';
 
 Oink\serve('endpoints.php');
 ```
 
-endpoints.php
+**endpoints.php**
 ```php
 include_once 'db.php';  // Your database functions
 use function Oink\{str, number, enum, id, email};
@@ -52,7 +52,7 @@ function create_comment() {
 Let's see what's happening here:
 
 * **Routing:** When calling `serve`, it looks at all function names defined in the file passed as argument and creates an endpoint for each one. Hence, going to `my.website/posts` will call the `posts` function. This routing can be customized by passing extra parameters to `serve`. The endpoints are method-agnostic, so you can use GET, POST, PUT, DELETE, etc. to access them.
-* **Parameters:** In the endpoints file, the request parameters are read by calling functions with type names. For instance, calling `str("tag", optional: true)` will read the `tag` parameter, ensure it's a string, and return its value or `null` if it's not present. Since the endpoints are method-agnostic, the parameters can come as form data, JSON, cookies or even headers. By default, GET parameters are not allowed (since parameters are unaware fo the request method, this could lead to CSRF attacks), but you can enable them by passing `allow_get: true` to `serve`.
+* **Parameters:** In the endpoints file, the request parameters are read by calling functions with type names. For instance, calling `str("tag", optional: true)` will read the `tag` parameter, ensure it's a string, and return its value or `null` if it's not present. Since the endpoints are method-agnostic, the parameters can come as form data, JSON, cookies or even headers. By default, GET parameters are not allowed (since parameters are unaware of the request method, this could lead to CSRF attacks), but you can enable them by passing `allow_get: true` to `serve`.
 * **Response:** The requests always return a JSON object or array returned by the endpoint function. If the function doesn't return anything, it will return `{"success": true}`. If a parameter validation fails or if a `check` is evaluated to false, it will return a 400 error with `{"error": "reason"}`. If an exception is thrown, it will return a 500 error.
 
 To know more about the usage, check out the [documentation](documentation.md) or the [examples](examples/).
