@@ -54,7 +54,7 @@ Let's see what's happening here:
 * **Parameters:** In the endpoints file, the request parameters are read by calling functions with type names. For instance, calling `str("tag", optional: true)` will read the `tag` parameter, ensure it's a string, and return its value or `null` if not present. Parameters can come as form data, JSON, cookies, or even headers. By default, GET parameters are not allowed (since parameters are unaware of the request method, this could lead to CSRF attacks), but you can enable them by passing `allow_get: true` to `serve`.
 * **Response:** The response is a JSON object or array returned by the endpoint function. If the function doesn't return anything, the response will be `{"success": true}`. If a parameter validation fails or if a `check` is evaluated to false, it will return a 400 error with `{"error": <reason>}`. If an exception is thrown, it will return a 500 error.
 
-To know more about the usage, check out the [documentation](documentation.md) or the [examples](examples/).
+To know more about the usage, check out the [documentation](documentation.md) and the [examples](examples).
 
 ## Contributing
 
