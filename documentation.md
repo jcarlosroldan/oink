@@ -83,6 +83,12 @@ All error codes, params and explanations are defined in the following table. It 
 
 ## Changelog
 
+### 1.1.2 Launch and bugfixing
+
+* oink.php is now a public repo on GitHub! 🥳
+* FIX non-matched endpoints were returning 500 instead of 404.
+* FIX multiple fixes to make examples standalone.
+
 ### 1.1.0 File uploading
 
 * Added parameter method `file`.
