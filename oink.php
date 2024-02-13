@@ -155,29 +155,12 @@ function email($key, $optional=false, $default=null, $from_param=true, $tell_def
 	return $tell_default ? [$res, false] : $res;
 }
 
-function date($key, $format="Y-m-d", $optional=false, $default=null, $from_param=true, $tell_default=false) {
-	[$res, $is_default] = any($key, $optional, $default, $from_param, true);
-	if ($is_default) return $tell_default ? [$res, true] : $res;
-	check($res !== null, "invalidDate", $key, $format);
-	$res = \DateTime::createFromFormat($format, $res);
-	check($res !== false, "invalidDate", $key, $format);
-	return $tell_default ? [$res, false] : $res;
-}
-
-function time($key, $format="H:i:s", $optional=false, $default=null, $from_param=true, $tell_default=false) {
-	[$res, $is_default] = any($key, $optional, $default, $from_param, true);
-	if ($is_default) return $tell_default ? [$res, true] : $res;
-	check($res !== null, "invalidTime", $key, $format);
-	$res = \DateTime::createFromFormat($format, $res);
-	check($res !== false, "invalidTime", $key, $format);
-	return $tell_default ? [$res, false] : $res;
-}
-
-function datetime($key, $format="Y-m-d H:i:s", $optional=false, $default=null, $from_param=true, $tell_default=false) {
+function datetime($key, $format="Y-m-d H:i:s", $timezone='UTC', $optional=false, $default=null, $from_param=true, $tell_default=false) {
 	[$res, $is_default] = any($key, $optional, $default, $from_param, true);
 	if ($is_default) return $tell_default ? [$res, true] : $res;
 	check($res !== null, "invalidDatetime", $key, $format);
-	$res = \DateTime::createFromFormat($format, $res);
+	$timezone = $timezone === null ? null : new \DateTimeZone($timezone);
+	$res = \DateTime::createFromFormat($format, $res, $timezone);
 	check($res !== false, "invalidDatetime", $key, $format);
 	return $tell_default ? [$res, false] : $res;
 }
@@ -185,8 +168,7 @@ function datetime($key, $format="Y-m-d H:i:s", $optional=false, $default=null, $
 function file($key, $extensions=null, $max_size=null, $optional=false, $default=null, $from_param=true, $tell_default=false) {
 	[$res, $is_default] = any($key, $optional, $default, $from_param, true);
 	if ($is_default) return $tell_default ? [$res, true] : $res;
-	check(is_array($res), "notFile", $key);
-	check(isset($res["name"]) && isset($res["type"]) && isset($res["tmp_name"]) && isset($res["error"]) && isset($res["size"]), "invalidFile", $key);
+	check(is_array($res) && isset($res["name"]) && isset($res["type"]) && isset($res["tmp_name"]) && isset($res["error"]) && isset($res["size"]), "invalidFile", $key);
 	if (isset($max_size)) check($res["size"] <= $max_size, "fileTooBig", $key, $max_size);
 	$res["extension"] = strtolower(pathinfo($res["name"], PATHINFO_EXTENSION));
 	if (isset($extensions)) {

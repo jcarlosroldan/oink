@@ -57,13 +57,11 @@ All error codes, params and explanations are defined in the following table. It 
 | Code | Error | Arguments | Explanation |
 | - | - | - | - |
 | 400 | fileTooBig | parameter, max_size | The {parameter} is too big. Maximum size is {max_size}. |
-| 400 | invalidDate | parameter, format | The {parameter} is not a valid date. Expected format is {format}. |
 | 400 | invalidDatetime | parameter, format | The {parameter} is not a valid datetime. Expected format is {format}. |
 | 400 | invalidEmail | parameter | The {parameter} is not a valid email address. |
 | 400 | invalidExtension | extension, allowed_exts | The file has an invalid extension. Allowed extensions are {allowed_exts}. |
 | 400 | invalidFile | parameter | The {parameter} is an invalid file. |
 | 400 | invalidFormat | parameter | The {parameter} has an invalid format. |
-| 400 | invalidTime | parameter, format | The {parameter} is not a valid time. Expected format is {format}. |
 | 400 | invalidValue | parameter, allowed_values | The {parameter} has an invalid value. Allowed values are {allowed_values}. |
 | 400 | notBoolean | parameter | The {parameter} is not a boolean value. |
 | 400 | notFile | parameter | The {parameter} is not a file. |
@@ -82,6 +80,13 @@ All error codes, params and explanations are defined in the following table. It 
 * The argument is an empty string when not in debug mode.
 
 ## Changelog
+
+### 1.2.0 Date adjustments
+
+* Removed `date` and `time`, since only DateTime is available in PHP. Not pushing the major because no one is using it yet.
+* Allowed `datetime` to receive a timezone.
+* FIX some datetime exceptions were 500 instead of 400.
+* Updated docs.
 
 ### 1.1.2 Launch and bugfixing
 
