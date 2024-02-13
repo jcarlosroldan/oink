@@ -33,8 +33,7 @@ function serve($endpoints_path, $path=null, $debug=false, $base_path="/api/", $e
 		$res = ["error" => "unexpectedError", "args" => $_debug ? $e->getTrace() : ""];
 	}
 	if ($data["output_format"] === "file") {
-		header("Content-Type: " . mime_content_type($data["filename"]));
-		header("Content-Disposition: inline");
+		header("Content-Type: application/octet-stream");
 		readfile($data["filename"]);
 	} else {
 		header("Content-Type: application/json");
