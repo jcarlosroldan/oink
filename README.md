@@ -1,18 +1,16 @@
 # 🐽 oink.php
 
-oink.php is a free and open-source JSON API wrapper for PHP. It's a single file that you can include in your project and start using right away.
+oink.php is a free and open source API wrapper for PHP, in a single file.
 
 ## Installation
 
-You can install it by downloading the `oink.php` file and including it in your project.
-
-This project is compatible with PHP 8.0 or later. It probably works with previous versions, although it hasn't been tested, and some functionalities like [named arguments](https://www.php.net/manual/en/functions.arguments.php#functions.named-arguments) will not be available.
+You can install it by downloading the `oink.php` file and including it in your project. It doesn't have dependencies and is compatible with PHP 8.0 or later.
 
 You will need to make all requests go through your `index.php` file. This can be done by using an `.htaccess` file, a `web.config` file, or by configuring your web server. You can find examples of `.htaccess` files in the [examples](examples/) directory.
 
 ## Basic Usage
 
-Include the file and call `serve` from the `Oink` namespace with a reference to your endpoints.
+This minimal example shows how to create a simple blog API:
 
 **index.php**
 ```php
