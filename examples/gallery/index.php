@@ -2,10 +2,6 @@
 
 include_once 'oink.php';
 
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
-
 Oink\serve('endpoints.php', base_path: '/api', debug: true);
 
 ?><!doctype html>
