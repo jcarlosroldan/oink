@@ -1,0 +1,6 @@
+RewriteEngine On
+RewriteBase /examples/gallery/
+RewriteCond %{REQUEST_FILENAME} !-d
+# exclude css files from the rewrite
+RewriteCond %{REQUEST_URI} !\.(css|js)$
+RewriteRule ^ index.php [L,QSA]

@@ -1,0 +1,17 @@
+*{box-sizing:border-box}
+body{font:500 16px system-ui,sans-serif;max-width:64rem;margin:auto;text-align:center;background:#010416;color:#b4bcd0}
+form{position:relative;display:flex;flex-direction:column;gap:.5rem;align-items:center;width:30rem;margin:4rem auto;padding:1rem;background:radial-gradient(#010416,#080a1a);border-radius:1rem;border:1px solid #3336}
+form::after{content:'';position:absolute;top:0;left:0;width:100%;height:100%;background:linear-gradient(var(--rot), #250061, #001b66);border-radius:.5rem;z-index:-1;filter:blur(1rem);animation:3s rotate linear infinite}
+@property --rot{syntax:'<angle>';initial-value:0deg;inherits:false}
+@keyframes rotate{to{--rot:360deg}}
+form > div{display:flex;gap:1rem;width:100%;text-align:left;align-items:center}
+#message{flex-grow:1}
+input,button{padding:.5rem 1rem;font:inherit;border:0;border-radius:1rem}
+input{width:100%;background:#fff2;color:currentColor}
+input:focus{outline:0}
+button{background:#1fa3c4;color:#fff;font-weight:bold;cursor:pointer}
+button:hover{background:#0e7c99}
+button:active{background:#0a6c80}
+figure{margin:0}
+#gallery{display:grid;grid-template-columns:repeat(auto-fill,minmax(12rem,1fr));gap:1.5rem;padding:1.5rem}
+img{width:100%;border-radius:1rem;aspect-ratio:1;object-fit:cover;background:#000}
