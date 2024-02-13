@@ -22,12 +22,13 @@ Specifically, the way the request URI path is transformed into an endpoint is as
 1. The base path is removed from the start of the URI.
 2. The remaining path is trimmed to remove slashes from the start and end.
 3. The remaining path is transformed into a function name by replacing slashes with underscores.
-4. If the function contains a dot after the last underscore (as in `thumbnails_4.png`), the part before the last underscore is considered the endpoint name, and the part after the last underscore is considered the filename. This is useful for serving files.
+4. If the function contains a dot after the last underscore (as in `thumbnails_4.png`), the part before the last underscore is considered the endpoint name (`thumbnails`), and the part after the last underscore is considered the filename (`4.png`). This is useful for serving files.
 
 This is a simple and effective way to define the endpoints, but it has some limitations:
 
 * You can't have two endpoints with the same name but different methods. It can be easily solved by using endpoints like `/post/list`, `/post/create`, `/post/delete`, etc.
-* You can't have a dynamic endpoint, like `/post/{id}` or `/thumbnail/4`. The former can be solved by using a query/POST parameter, like `/post?id=4`, and the latter can be solved by using a with an extension filename, like `/thumbnail/4.png`.
+* You can't have a dynamic endpoint, like `/post/{id}`. Instead, you can use a query or POST parameter, like `/post?id=4`.
+* You can't have a dynamic filename, like `/thumbnail/4`. Instead, you can use an extension filename, like `/thumbnail/4.png`.
 * Requesting `/post/list` and `/post_list` will call the same function, but it's advised to use the former for consistency.
 * All methods defined in the endpoints file will be exposed, except for those imported from other files or those starting with an underscore.
 
@@ -45,9 +46,9 @@ Besides these parameters, the `serve` method will also add the following paramet
 
 Merging all parameters into a single array is not conventional, and it requires some considerations:
 
-* It's not possible to have two parameters with the same name but different types.
+* It's not possible to have two parameters with the same name coming from different sources.
 * Security-wise, the merge itself is not a problem since all these fields come from the user and they can be manipulated anyways.
-* However, it could lead to CSRF attacks if GET parameters are enabled, since someone could craft a link like `your.website/account/delete?confirm=true` and trick the user into clicking it. It is advised to keep GET params disabled, but if enabled, using a CSRF token might be a good idea.
+* However, it could lead to CSRF attacks if GET parameters are enabled, since someone could craft a link like `your.website/account/delete?confirm=true` and trick the user into clicking it. It is advised to keep GET params disabled, but if enabled, you should consider using a CSRF token.
 * If you customize your environment (web server, PHP configuration, etc.) to set some specific headers, they might be overwritten by the parameters.
 
 ## Errors
