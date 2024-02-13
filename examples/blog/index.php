@@ -12,19 +12,21 @@ Oink\serve('endpoints.php', base_path: '/api', allow_get: true);
 <title>Blog</title>
 <style>
 *{box-sizing:border-box}
-body{font:16px system-ui,sans-serif;margin:2rem;background:#fee}
+body{font:16px system-ui,sans-serif;margin:2rem;background:#fff}
 h1,h2,h3{color:#734;margin:0}
 h3{margin:2rem 0 1rem}
 #posts{max-width:40rem}
 article{margin:0 -1rem;padding:1rem;border-radius:1rem;cursor:pointer}
 article:hover{background:#0001}
-#comments{position:absolute;display:none;flex-direction:column;top:0;right:0;height:100vh;width:20rem;padding:2rem 1rem;background:#0002}
+#comments{position:absolute;display:none;flex-direction:column;top:1rem;right:1rem;height:calc(100vh - 2rem);width:20rem;padding:1rem;border-radius:1rem;background:#0002}
 #comments h2{display:flex;justify-content:space-between}
 #comments h2 a{text-decoration:none;color:#000a}
 #comments.open{display:flex}
 form{display:flex;flex-direction:column;gap:.5rem}
 form .error{color:#8b1b24}
 input,textarea,button{font:inherit;padding:.5rem}
+input,textarea{border:1px solid #d5c1c1;border-radius:.5rem}
+button{font-weight:bold;background:linear-gradient(45deg, #471904, #5b061d);border:0;border-radius:1rem;color:white;cursor:pointer}
 </style>
 </head>
 <body>
@@ -42,7 +44,7 @@ input,textarea,button{font:inherit;padding:.5rem}
 		<input type="hidden" name="post_id">
 		<input type="mail" name="author" placeholder="your@mail.com">
 		<textarea name="text" placeholder="Your comment"></textarea>
-		<button>Add comment</button>
+		<button>ADD COMMENT</button>
 		<div class="error"></div>
 	</form>
 </div>
