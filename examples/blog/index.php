@@ -18,7 +18,7 @@ h3{margin:2rem 0 1rem}
 #posts{max-width:40rem}
 article{margin:0 -1rem;padding:1rem;border-radius:1rem;cursor:pointer}
 article:hover{background:#0001}
-#comments{position:absolute;display:none;flex-direction:column;top:1rem;right:1rem;height:calc(100vh - 2rem);width:20rem;padding:1rem;border-radius:1rem;background:#0002}
+#comments{position:absolute;display:none;flex-direction:column;top:1rem;right:1rem;height:calc(100vh - 2rem);width:20rem;padding:1rem;border-radius:1rem;background:#fee}
 #comments h2{display:flex;justify-content:space-between}
 #comments h2 a{text-decoration:none;color:#000a}
 #comments.open{display:flex}
