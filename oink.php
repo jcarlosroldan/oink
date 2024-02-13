@@ -14,13 +14,15 @@ function serve($endpoints_path, $path=null, $debug=false, $base_path="/api/", $e
 		include_once $endpoints_path;
 		$res = null;
 		$endpoints_path_abs = realpath($endpoints_path);
+		$found = false;
 		foreach (get_defined_functions()["user"] as $e) {
 			if (strpos($e, "_") !== 0 && realpath((new \ReflectionFunction($e))->getFileName()) === $endpoints_path_abs && ($e === $data['path'] || $e === "get_" . $data['path'])) {
+				$found = true;
 				$res = $e();
 				break;
 			}
 		}
-		$_debug ? check(false, "unknownEndpoint", $data['path']) : check(isset($res), "unknownEndpoint");
+		$_debug ? check($found, "unknownEndpoint", $data['path']) : check($found, "unknownEndpoint");
 	} catch (\AssertionError $e) {
 		$data["output_format"] = "json";
 		http_response_code(400);
