@@ -22,7 +22,7 @@ function serve($endpoints_path, $path=null, $debug=false, $base_path="/api/", $e
 				break;
 			}
 		}
-		$_debug ? check($found, "unknownEndpoint", $data['path']) : check($found, "unknownEndpoint");
+		check($found, "unknownEndpoint", $_debug ? $data['path'] : "");
 	} catch (\AssertionError $e) {
 		$data["output_format"] = "json";
 		http_response_code(400);
@@ -30,8 +30,7 @@ function serve($endpoints_path, $path=null, $debug=false, $base_path="/api/", $e
 	} catch (Throwable $e) {
 		$data["output_format"] = "json";
 		http_response_code(500);
-		$res = ["error" => "unexpectedError"];
-		if ($_debug) $res["args"] = $e->getTrace();
+		$res = ["error" => "unexpectedError", "args" => $_debug ? $e->getTrace() : ""];
 	}
 	if ($data["output_format"] === "file") {
 		header("Content-Type: " . mime_content_type($data["filename"]));
@@ -66,7 +65,7 @@ function get_data($path, $base_path, $allow_get) {
 
 function send_file($filename) {
 	global $data, $_debug;
-	$_debug ? check(file_exists($filename), "notFound", $filename) : check(file_exists($filename), "notFound");
+	check(file_exists($filename), "notFound", $_debug ? $filename : "");
 	$data['output_format'] = "file";
 	$data['filename'] = $filename;
 }
