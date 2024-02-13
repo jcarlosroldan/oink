@@ -1,8 +1,8 @@
 <?php
 
-include_once '../../oink.php';
+include_once 'oink.php';
 
-Oink\serve('endpoints.php', base_path: '/examples/blog/api', allow_get: true);
+Oink\serve('endpoints.php', base_path: '/api', allow_get: true);
 
 ?><!doctype html>
 <html>
@@ -98,7 +98,7 @@ async function api(endpoint, data = {}) {
 	if (typeof data === 'string') {
 		data = Object.fromEntries(new FormData($(data)));
 	}
-	return await (await fetch(`/examples/blog/api/${endpoint}`, {
+	return await (await fetch(`/api/${endpoint}`, {
 		method: 'POST',
 		headers: {'Content-Type': 'application/json'},
 		body: JSON.stringify(data)

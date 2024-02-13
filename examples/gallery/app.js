@@ -3,7 +3,7 @@ addEventListener('DOMContentLoaded', loadLatest);
 function loadLatest() {
 	api('latest').then(data => {
 		$('#gallery').innerHTML = data.map(image => `<figure>
-			<img src="/examples/gallery/api/image/${image.id}.${image.extension}" alt="${image.title}">
+			<img src="/api/image/${image.id}.${image.extension}" alt="${image.title}">
 			<figcaption>${image.title}</figcaption>
 		</figure>`).join('');
 		$('form').addEventListener('submit', e => {
@@ -29,7 +29,7 @@ const $ = s => document.querySelector(s);
 
 async function api(endpoint, data = {}) {
 	const dataSelector = typeof data === 'string'
-	return await (await fetch(`/examples/gallery/api/${endpoint}`, {
+	return await (await fetch(`/api/${endpoint}`, {
 		method: 'POST',
 		body: dataSelector ? new FormData($(data)) : JSON.stringify(data),
 		headers: dataSelector ? undefined : {'Content-Type': 'application/json'}

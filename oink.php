@@ -41,7 +41,7 @@ function serve($endpoints_path, $path=null, $debug=false, $base_path="/api/", $e
 
 function get_data($path, $base_path, $allow_get) {
 	$headers = getallheaders();
-	$res = array_merge($headers, $_COOKIE, $_FILES, $_POST, $allow_get ? $_GET : []);
+	$res = array_merge($headers, $_COOKIE, $_FILES, $allow_get ? $_GET : [], $_POST);
 	$json = json_decode(file_get_contents("php://input"), true);
 	if (isset($json)) $res = array_merge($res, $json);
 	foreach ($res as $key => $value) {
@@ -51,12 +51,10 @@ function get_data($path, $base_path, $allow_get) {
 	$res["ip"] = in_array("X-Forwarded-For", $headers) ? $headers["X-Forwarded-For"] : $_SERVER["REMOTE_ADDR"];
 	$res["method"] = $_SERVER['REQUEST_METHOD'];
 	$res['path'] = str_replace("/", "_", trim(substr($path, strlen($base_path)), "/"));
+	$res['output_format'] = "json";
 	if (preg_match("/^(\w+)_(\w+\.\w+)$/", $res['path'], $matches)) {
-		$res['output_format'] = "file";
 		$res['path'] = $matches[1];
 		$res['filename'] = $matches[2];
-	} else {
-		$res['output_format'] = "json";
 	}
 	return $res;
 }
