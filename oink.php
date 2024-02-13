@@ -12,6 +12,7 @@ function serve($endpoints_path, $path=null, $debug=false, $base_path="/api/", $e
 		if (strpos($path, $base_path) !== 0) return;
 		$data = get_data($path, $base_path, $allow_get);
 		include_once $endpoints_path;
+		$res = null;
 		foreach (get_defined_functions()["user"] as $e) {
 			if (strpos($e, "_") !== 0 && strpos($e, "\\") === false && ($e === $data['path'] || $e === "get_" . $data['path'])) {
 				$res = $e();

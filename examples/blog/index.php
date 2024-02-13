@@ -87,7 +87,7 @@ function postComment() {
 		if (data.error) {
 			$('#comments form .error').textContent = translate(data.error, data.args || []);
 		} else {
-			loadComments(form.querySelector('input[name="post_id"]').value);
+			loadComments($('#comments form').querySelector('input[name="post_id"]').value);
 		}
 	});
 }
