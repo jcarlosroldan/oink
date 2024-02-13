@@ -24,9 +24,11 @@ article:hover{background:#0001}
 #comments.open{display:flex}
 form{display:flex;flex-direction:column;gap:.5rem}
 form .error{color:#8b1b24}
-input,textarea,button{font:inherit;padding:.5rem}
-input,textarea{border:1px solid #d5c1c1;border-radius:.5rem}
-button{font-weight:bold;background:linear-gradient(45deg, #471904, #5b061d);border:0;border-radius:1rem;color:white;cursor:pointer}
+input,textarea,button{font:inherit;padding:.5rem;border:0}
+input,textarea{outline:1px solid #d5c1c1;border-radius:.5rem}
+button{font-weight:bold;background:#5b0644;border-radius:1rem;color:white;cursor:pointer}
+button:hover{background:#7b125f}
+button:active{bcakground:#450c36}
 </style>
 </head>
 <body>
