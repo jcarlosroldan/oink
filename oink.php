@@ -1,5 +1,5 @@
 <?php
-/** Oink 1.1.2 (https://github.com/jcarlosroldan/oink): single-file PHP API **/
+/** Oink 1.2.1 (https://github.com/jcarlosroldan/oink): single-file PHP API **/
 namespace oink;
 
 $data; $error; $_debug;

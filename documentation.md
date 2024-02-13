@@ -81,6 +81,12 @@ All error codes, params and explanations are defined in the following table. It 
 
 ## Changelog
 
+### 1.2.1 File serving adjustments
+
+* Removed file mime guessing for improved speed and security.
+* Adjusted some of the examples.
+* Added snapshots to the documentation and ellaborated a bit more on the examples.
+
 ### 1.2.0 Date adjustments
 
 * Removed `date` and `time`, since only DateTime is available in PHP. Not pushing the major because no one is using it yet.
