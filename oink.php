@@ -158,24 +158,27 @@ function email($key, $optional=false, $default=null, $from_param=true, $tell_def
 function date($key, $format="Y-m-d", $optional=false, $default=null, $from_param=true, $tell_default=false) {
 	[$res, $is_default] = any($key, $optional, $default, $from_param, true);
 	if ($is_default) return $tell_default ? [$res, true] : $res;
+	check($res !== null, "invalidDate", $key, $format);
 	$res = \DateTime::createFromFormat($format, $res);
-	check($res && $res->format($format) === $res, "invalidDate", $key, $format);
+	check($res !== false, "invalidDate", $key, $format);
 	return $tell_default ? [$res, false] : $res;
 }
 
 function time($key, $format="H:i:s", $optional=false, $default=null, $from_param=true, $tell_default=false) {
 	[$res, $is_default] = any($key, $optional, $default, $from_param, true);
 	if ($is_default) return $tell_default ? [$res, true] : $res;
+	check($res !== null, "invalidTime", $key, $format);
 	$res = \DateTime::createFromFormat($format, $res);
-	check($res && $res->format($format) === $res, "invalidTime", $key, $format);
+	check($res !== false, "invalidTime", $key, $format);
 	return $tell_default ? [$res, false] : $res;
 }
 
 function datetime($key, $format="Y-m-d H:i:s", $optional=false, $default=null, $from_param=true, $tell_default=false) {
 	[$res, $is_default] = any($key, $optional, $default, $from_param, true);
 	if ($is_default) return $tell_default ? [$res, true] : $res;
+	check($res !== null, "invalidDatetime", $key, $format);
 	$res = \DateTime::createFromFormat($format, $res);
-	check($res && $res->format($format) === $res, "invalidDatetime", $key, $format);
+	check($res !== false, "invalidDatetime", $key, $format);
 	return $tell_default ? [$res, false] : $res;
 }
 
