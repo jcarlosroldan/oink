@@ -20,6 +20,7 @@ function serve($endpoints_path, $path=null, $debug=false, $base_path="/api/", $e
 				break;
 			}
 		}
+		$_debug ? check(false, "unknownEndpoint", $data['path']) : check(isset($res), "unknownEndpoint");
 	} catch (\AssertionError $e) {
 		$data["output_format"] = "json";
 		http_response_code(400);
@@ -63,11 +64,7 @@ function get_data($path, $base_path, $allow_get) {
 
 function send_file($filename) {
 	global $data, $_debug;
-	if ($_debug) {
-		check(file_exists($filename), "notFound", $filename);
-	} else {
-		check(file_exists($filename), "notFound");
-	}
+	$_debug ? check(file_exists($filename), "notFound", $filename) : check(file_exists($filename), "notFound");
 	$data['output_format'] = "file";
 	$data['filename'] = $filename;
 }
