@@ -2,57 +2,80 @@
 /** Oink 1.0.0 (https://github.com/jcarlosroldan/oink): single-file PHP API **/
 namespace oink;
 
-$data; $error;
+$data; $error; $_debug;
 
-function serve($endpoints_path, $debug=false, $base_path="/", $escape_unicode=false, $allow_get=false) {
-	global $error;
+function serve($endpoints_path, $path=null, $debug=false, $base_path="/api/", $escape_unicode=false, $allow_get=false) {
+	global $data, $error, $_debug;
 	try {
-		get_data($allow_get);
-		$endpoint = strtolower(explode("?", $_SERVER['REQUEST_URI'], 2)[0]);
-		check(strpos($endpoint, $base_path) === 0, "invalidPath", $endpoint);
-		$endpoint = str_replace("/", "_", trim(substr($endpoint, strlen($base_path)), "/"));
-		$endpoints = get_defined_functions()["user"];
+		$_debug = $debug;
+		if ($path === null) $path = strtolower(explode("?", $_SERVER['REQUEST_URI'], 2)[0]);
+		if (strpos($path, $base_path) !== 0) return;
+		$data = get_data($path, $base_path, $allow_get);
 		include_once $endpoints_path;
-		$endpoints = array_diff(get_defined_functions()["user"], $endpoints);
-		if (in_array("get_$endpoint", $endpoints)) $endpoint = "get_$endpoint";
-		check(in_array($endpoint, $endpoints), "unknownEndpoint", $endpoint);
-		$res = $endpoint();
-		if (is_null($res)) $res = ["success" => true];
+		foreach (get_defined_functions()["user"] as $e) {
+			if (strpos($e, "_") !== 0 && strpos($e, "\\") === false && ($e === $data['path'] || $e === "get_" . $data['path'])) {
+				$res = $e();
+				break;
+			}
+		}
 	} catch (\AssertionError $e) {
+		$data["output_format"] = "json";
 		http_response_code(400);
 		$res = $error;
 	} catch (Throwable $e) {
+		$data["output_format"] = "json";
 		http_response_code(500);
-		if ($debug) {
-			$res = ["error" => $e->getMessage(), "traceback" => $e->getTrace()];
-		} else {
-			$res = ["error" => "unknownError"];
-		}
+		$res = ["error" => "unexpectedError"];
+		if ($_debug) $res["args"] = $e->getTrace();
 	}
-	exit(json_encode($res, $escape_unicode ? 0 : JSON_UNESCAPED_UNICODE));
-	header("Content-Type: application/json");
-	
+	if ($data["output_format"] === "file") {
+		header("Content-Type: " . mime_content_type($data["filename"]));
+		header("Content-Disposition: inline");
+		readfile($data["filename"]);
+	} else {
+		header("Content-Type: application/json");
+		if (is_null($res)) $res = ["success" => true];
+		exit(json_encode($res, $escape_unicode ? 0 : JSON_UNESCAPED_UNICODE));
+	}
 }
 
-function get_data($allow_get=false) {
-	global $data;
+function get_data($path, $base_path, $allow_get) {
 	$headers = getallheaders();
-	$data = array_merge($headers, $_COOKIE, $_FILES, $_POST, $allow_get ? $_GET : []);
+	$res = array_merge($headers, $_COOKIE, $_FILES, $_POST, $allow_get ? $_GET : []);
 	$json = json_decode(file_get_contents("php://input"), true);
-	if (isset($json)) $data = array_merge($data, $json);
-	foreach ($data as $key => $value) {
-		unset($data[$key]);
-		$data[strtolower(trim($key))] = $value;
+	if (isset($json)) $res = array_merge($res, $json);
+	foreach ($res as $key => $value) {
+		unset($res[$key]);
+		$res[strtolower(trim($key))] = $value;
 	}
-	$data["ip"] = in_array("X-Forwarded-For", $headers) ? $headers["X-Forwarded-For"] : $_SERVER["REMOTE_ADDR"];	
-	$data["path"] = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
-	$data["method"] = $_SERVER['REQUEST_METHOD'];
+	$res["ip"] = in_array("X-Forwarded-For", $headers) ? $headers["X-Forwarded-For"] : $_SERVER["REMOTE_ADDR"];
+	$res["method"] = $_SERVER['REQUEST_METHOD'];
+	$res['path'] = str_replace("/", "_", trim(substr($path, strlen($base_path)), "/"));
+	if (preg_match("/^(\w+)_(\w+\.\w+)$/", $res['path'], $matches)) {
+		$res['output_format'] = "file";
+		$res['path'] = $matches[1];
+		$res['filename'] = $matches[2];
+	} else {
+		$res['output_format'] = "json";
+	}
+	return $res;
 }
 
-function check($condition, $description, ...$params) {
+function send_file($filename) {
+	global $data, $_debug;
+	if ($_debug) {
+		check(file_exists($filename), "notFound", $filename);
+	} else {
+		check(file_exists($filename), "notFound");
+	}
+	$data['output_format'] = "file";
+	$data['filename'] = $filename;
+}
+
+function check($condition, $description, ...$args) {
 	global $error;
 	if (!$condition) {
-		$error = ["error" => $description, "params" => $params];
+		$error = ["error" => $description, "args" => $args];
 		throw new \AssertionError();
 	}
 }
@@ -158,10 +181,16 @@ function datetime($key, $format="Y-m-d H:i:s", $optional=false, $default=null, $
 	return $tell_default ? [$res, false] : $res;
 }
 
-function file($key, $optional=false, $default=null, $from_param=true, $tell_default=false) {
+function file($key, $extensions=null, $max_size=null, $optional=false, $default=null, $from_param=true, $tell_default=false) {
 	[$res, $is_default] = any($key, $optional, $default, $from_param, true);
 	if ($is_default) return $tell_default ? [$res, true] : $res;
 	check(is_array($res), "notFile", $key);
 	check(isset($res["name"]) && isset($res["type"]) && isset($res["tmp_name"]) && isset($res["error"]) && isset($res["size"]), "invalidFile", $key);
+	if (isset($max_size)) check($res["size"] <= $max_size, "fileTooBig", $key, $max_size);
+	$res["extension"] = strtolower(pathinfo($res["name"], PATHINFO_EXTENSION));
+	if (isset($extensions)) {
+		$extensions = array_map("strtolower", $extensions);
+		check(in_array($res["extension"], $extensions), "invalidExtension", $key, $extensions);
+	}
 	return $tell_default ? [$res, false] : $res;
 }
