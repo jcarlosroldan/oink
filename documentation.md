@@ -45,6 +45,12 @@ All error codes, params and explanations are defined in the following table. It 
 
 ## Changelog
 
+### 1.1.0 File uploading
+
+* Added parameter method `file`.
+* Added method `send_file` to return a file as a response.
+* Added example for file uploading.
+
 ### 1.0.0 Initial library
 
 * Added controller methods `serve` and `get_data`.

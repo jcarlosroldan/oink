@@ -57,7 +57,7 @@ To know more about the usage, check out the [documentation](documentation.md) or
 
 ## Contributing
 
-If you want to contribute, you can do so by forking the repository and creating a pull request. You should have a look at the file first to follow the same ethos and style. If you plan to add a new feature or extend existing functionality, please open an issue first to discuss it.
+If you want to contribute, you can do so by forking the repository and creating a pull request. You should have a look at the file first to follow the same ethos and style. If you plan to add a new feature or extend existing functionality, please open an issue first to discuss it. Feel free to open an issue if you find a bug or have a suggestion.
 
 > Perfection is achieved, not when there is nothing more to add, but when there is nothing left to take away.
 >
