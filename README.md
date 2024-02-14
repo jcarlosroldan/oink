@@ -22,7 +22,7 @@ Oink\serve('endpoints.php');
 **endpoints.php**
 ```php
 include_once 'db.php';  // Your database functions
-use function Oink\{str, number, enum, id, email};
+use function Oink\{str, enum, id, email};
 
 function post_list() {
     $page = id("page", min: 1, default: 1, optional: true);
