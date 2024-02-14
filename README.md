@@ -25,7 +25,7 @@ include_once 'db.php';  // Your database functions
 use function Oink\{str, number, enum, id, email};
 
 function post_list() {
-    $page = int("page", min: 1, default: 1, optional: true);
+    $page = id("page", min: 1, default: 1, optional: true);
     $limit = enum("limit", values: [10, 20, 50], default: 10, optional: true);
     [$pages, $posts] = DB\posts($page, $limit);
     return [
