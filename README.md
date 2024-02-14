@@ -14,14 +14,14 @@ This minimal example shows how to create a simple blog API:
 
 **index.php**
 ```php
-include_once 'oink.php';
+require_once 'oink.php';
 
 Oink\serve('endpoints.php');
 ```
 
 **endpoints.php**
 ```php
-include_once 'db.php';  // Your database functions
+require_once 'db.php';  // Your database functions
 use function Oink\{str, enum, id, email};
 
 function post_list() {

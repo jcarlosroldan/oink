@@ -11,7 +11,7 @@ function serve($endpoints_path, $path=null, $debug=false, $base_path="/api/", $e
 		if ($path === null) $path = strtolower(explode("?", $_SERVER['REQUEST_URI'], 2)[0]);
 		if (strpos($path, $base_path) !== 0) return;
 		$data = get_data($path, $base_path, $allow_get);
-		include_once $endpoints_path;
+		require_once $endpoints_path;
 		$res = null;
 		$endpoints_path_abs = realpath($endpoints_path);
 		$found = false;

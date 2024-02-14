@@ -1,6 +1,6 @@
 <?php
 
-include_once 'db.php';
+require_once 'db.php';
 use function Oink\{str, number, enum, id, email, check};
 
 function post_list() {

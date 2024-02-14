@@ -1,6 +1,6 @@
 <?php
 
-include_once 'db.php';
+require_once 'db.php';
 use function Oink\{check, str, file, id, send_file};
 
 function latest() {
