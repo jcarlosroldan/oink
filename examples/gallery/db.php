@@ -2,7 +2,7 @@
 
 namespace DB;
 
-$_conn = null;
+$_conn;
 function conn() {
 	global $_conn;
 	if ($_conn === null) {
