@@ -67,3 +67,5 @@ If you want to contribute, you can do so by forking the repository and creating 
 ## Why Oink?
 
 Oink should feel like a pig in the mud: simple and comfortable, even though it's not the cleanest thing in the world. This library prioritizes development speed and simplicity over everything else, including best practices and standards. If you are looking for a highly customizable, modular, and scalable solution, you should look for a full-featured framework like Laravel, Symfony, or Lumen.
+
+See more [here](https://jcarlosroldan.com/post/322/minimal-apis-with-oink-php).
