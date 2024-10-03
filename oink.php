@@ -27,7 +27,7 @@ function serve($endpoints_path, $path=null, $debug=false, $base_path="/api/", $e
 		$data["output_format"] = "json";
 		http_response_code(400);
 		$res = $error;
-	} catch (Throwable $e) {
+	} catch (\Throwable $e) {
 		$data["output_format"] = "json";
 		http_response_code(500);
 		$res = ["error" => "unexpectedError", "args" => $_debug ? $e->getTrace() : ""];
