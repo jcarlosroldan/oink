@@ -1,5 +1,5 @@
 <?php
-/** Oink 1.3.0 (https://github.com/jcarlosroldan/oink): single-file PHP API **/
+/** Oink 1.3.1 (https://github.com/jcarlosroldan/oink): single-file PHP API **/
 namespace oink;
 
 $data; $error; $_debug;
@@ -30,7 +30,7 @@ function serve($endpoints_path, $path=null, $debug=false, $base_path="/api/", $e
 	} catch (\Throwable $e) {
 		$data["output_format"] = "json";
 		http_response_code(500);
-		$res = ["error" => "unexpectedError", "args" => $_debug ? array($e->getTraceAsString()) : array()];
+		$res = ["error" => "unexpectedError", "args" => $_debug ? [$e->__toString()] : []];
 	}
 	if ($data["output_format"] === "file") {
 		header("Content-Type: application/octet-stream");
