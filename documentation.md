@@ -78,7 +78,7 @@ All error codes, params and explanations are defined in the following table. It 
 | 400 | unknownEndpoint | endpoint* | No endpoint called {endpoint}. |
 | 500 | unexpectedError | trace* | An unexpected error occurred with the following trace: {trace}. |
 
-* The argument is an empty string when not in debug mode.
+\*The argument is an empty string when not in debug mode.
 
 ## Changelog
 
