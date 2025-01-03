@@ -1,6 +1,6 @@
 # 🐽 oink.php
 
-oink.php is a free and open source API wrapper for PHP, in a single file.
+oink.php is a free and open source API wrapper for PHP, in a single 7kB file.
 
 ## Installation
 
