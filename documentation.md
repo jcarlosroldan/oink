@@ -15,28 +15,26 @@ It is the entrypoint of the library. It will read the endpoints script, and rout
 
 ## Routing
 
-The way oink.php does routing is not very conventional. Instead of using some kind of route table, it uses the function names defined in the endpoints file. This means that the function `post_list` will be called when the request is made to `/api/post/list`.
+The way oink.php does routing is a bit unconventional. Instead of using some of route table, it maps it from the function names defined in the endpoints file. It works as follows:
 
-Specifically, the way the request URI path is transformed into an endpoint is as follows:
-
-1. The base path is removed from the start of the URI.
-2. The remaining path is trimmed to remove slashes from the start and end.
-3. The remaining path is transformed into a function name by replacing slashes with underscores.
+1. First, the path is obtained by taking the pathname (everything in the URL after the first / and before ? or #).
+2. The remaining path is trimmed to remove slashes from both ends.
+3. Then, it is transformed into a function name by replacing slashes with underscores.
 4. If the function contains a dot after the last underscore (as in `thumbnails_4.png`), the part before the last underscore is considered the endpoint name (`thumbnails`), and the part after the last underscore is considered the filename (`4.png`). This is useful for serving files.
 
 This is a simple and effective way to define the endpoints, but it has some limitations:
 
-* You can't have two endpoints with the same name but different methods. It can be easily solved by using endpoints like `/post/list`, `/post/create`, `/post/delete`, etc.
 * You can't have a dynamic endpoint, like `/post/{id}`. Instead, you can use a query or POST parameter, like `/post?id=4`.
 * You can't have a dynamic filename, like `/thumbnail/4`. Instead, you can use an extension filename, like `/thumbnail/4.png`.
 * Requesting `/post/list` and `/post_list` will call the same function, but it's advised to use the former for consistency.
-* All methods defined in the endpoints file will be exposed, except for those imported from other files or those starting with an underscore.
+* All methods defined in the endpoints file will be exposed, except for those starting with an underscore or imported from other files.
+* You can't spread endpoints across multiple files.
 
 ## Parameters
 
-Parameters are pieces of data that come from the user. It can be a query parameter from a GET URL, a form data from a POST request, a JSON object, a cookie, or even a header. The `serve` method will read these parameters and merge them into a single array, all lowercased. In case of collision, the first from this list will have more priority: json, post, get, files, cookies, headers. GET parameters are disabled by default, but they can be enabled by passing `allow_get: true` to `serve`.
+Parameters are pieces of data that come from the user. It can be a query parameter from a GET URL, a form data from a POST request, a JSON object, a cookie, or even a header. The `serve` method will read these parameters and merge them into a single array, all lowercased. In case of collision, the priority will be as follows (rightmost will prevail): json, post, get, files, cookies, headers. GET parameters are disabled by default, but they can be enabled by passing `allow_get: true` to `serve`.
 
-Besides these parameters, the `serve` method will also add the following parameters:
+Besides these parameters, the `serve` method will also add the following ones:
 
 * `ip`: The IP address of the user.
 * `method`: The request method.
@@ -48,7 +46,7 @@ Merging all parameters into a single array is not conventional, and it requires 
 
 * It's not possible to have two parameters with the same name coming from different sources.
 * Security-wise, the merge itself is not a problem since all these fields come from the user and they can be manipulated anyways.
-* However, it could lead to CSRF attacks if GET parameters are enabled, since someone could craft a link like `your.website/account/delete?confirm=true` and trick the user into clicking it. It is advised to keep GET params disabled, but if enabled, you should consider using a CSRF token.
+* However, it could lead to CSRF attacks if GET parameters are enabled, since someone could craft a link like `your.website/account/delete?confirm=true` and trick the user into clicking it. It is advised to keep GET params disabled, but if enable them, you should consider using a CSRF token.
 * If you customize your environment (web server, PHP configuration, etc.) to set some specific headers, they might be overwritten by the parameters.
 
 ## Errors
