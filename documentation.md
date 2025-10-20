@@ -6,12 +6,12 @@ It is the entrypoint of the library. It will read the endpoints script, and rout
 
 | Parameter | Type | Default | Description |
 | - | - | - | - |
-| `$endpoints_path` | string | | The path to the file containing the endpoint functions. |
-| `$path` | string | `null` | The path to route the request to. If not set, it will use the current request URI. |
-| `$debug` | bool | `false` | If set to `true`, the debug mode will be activated. This will show the trace of any unexpected error, so it's advised to keep it off in production. |
-| `$base_path` | string | `/api/` | All requests must start with this path to be routed, and it will be removed from the endpoint name. |
-| `$escape_unicode` | bool | `false` | If set to `true`, the JSON response will escape all Unicode characters. |
-| `$allow_get` | bool | `false` | If set to `true`, the GET parameters will be allowed. |
+| `endpoints_path` | string | | The path to the file containing the endpoint functions. |
+| `path` | string | `null` | The path to route the request to. If not set, it will use the current request URI. |
+| `debug` | bool | `false` | If set to `true`, the debug mode will be activated. This will show the trace of any unexpected error, so it's advised to keep it off in production. |
+| `base_path` | string | `/api/` | All requests must start with this path to be routed, and it will be removed from the endpoint name. |
+| `escape_unicode` | bool | `false` | If set to `true`, the JSON response will escape all Unicode characters. |
+| `allow_get` | bool | `false` | If set to `true`, the GET parameters will be allowed. |
 
 ## Routing
 
