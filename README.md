@@ -24,7 +24,7 @@ Oink\serve('endpoints.php');
 require_once 'db.php';  // Your database functions
 use function Oink\{str, enum, id, email};
 
-function post_list() {
+function posts() {
     $page = id("page", default: 1, optional: true);
     $limit = enum("limit", values: [10, 20, 50], default: 10, optional: true);
     [$pages, $posts] = DB\posts($page, $limit);
@@ -33,13 +33,13 @@ function post_list() {
     ];
 }
 
-function comment_list() {
+function comments() {
     $post_id = id("post_id");
     check(DB\post_exists($post_id), "postNotFound");
     return ["comments" => DB\comments($post_id)];
 }
 
-function comment_create() {
+function comment_new() {
     $post_id = id("post_id");
     $author = email("author");
     $text = str("text", min: 5, max: 100);
@@ -50,9 +50,9 @@ function comment_create() {
 
 Let's see what's happening here:
 
-* **Routing:** When calling `serve`, it looks at all function names defined in the file passed as an argument and creates an endpoint for each one. Hence, going to `my.website/post/list` will call the `post_list` function. This routing can be customized by passing extra parameters to `serve`. The endpoints are method-agnostic, so you can use GET, POST, PUT, DELETE, etc., to access them.
-* **Parameters:** In the endpoints file, the request parameters are read by calling functions with type names. For instance, calling `str("tag", optional: true)` will read the `tag` parameter, ensure it's a string, and return its value or `null` if not present. Parameters can come as form data, JSON, cookies, or even headers. By default, GET parameters are not allowed (since parameters are unaware of the request method, this could lead to CSRF vulnerabilities), but you can enable them by passing `allow_get: true` to `serve`.
-* **Response:** The response is a JSON object or array returned by the endpoint function. If the function doesn't return anything, the response will be `{"success": true}`. If a parameter validation fails or if a `check` is evaluated to false, it will return a 400 error with `{"error": <reason>}`. If an exception is thrown, it will return a 500 error.
+* **Routing:** When calling `serve`, it looks at all function names defined in the file passed as an argument and creates an endpoint for each one. Hence, going to `example.com/posts` will call the `posts` or `example.com/comment/new` will call `comment_new`. This routing can be customized by passing extra parameters to `serve`. The endpoints are method-agnostic, so you can use GET, POST, PUT, DELETE, etc., to access them.
+* **Parameters:** In the endpoints file, the request parameters are read by calling functions with type names. For instance, calling `str("tag", optional: true)` will read the `tag` parameter, ensure it's a string, and return its value or `null` if not present. Parameters can come as form data, JSON, cookies, or even headers. By default, GET parameters are not allowed (this could lead to CSRF vulnerabilities), but you can enable them by passing `allow_get: true` to `serve`.
+* **Response:** The response is a JSON object or array returned by the endpoint function. If the function doesn't return anything, the response will be `{"success": true}`. If a parameter validation fails or if a `check` is evaluated to false, it will serve a 400 error with `{"error": <reason>}`. If an uncaught exception is thrown, it will serve a 500 error.
 
 To know more about the usage, check out the [documentation](documentation.md) and the [examples](examples).
 
