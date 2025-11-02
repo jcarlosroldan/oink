@@ -1,5 +1,5 @@
 <?php
-/** Oink 1.4.1 (https://github.com/jcarlosroldan/oink): single-file PHP API **/
+/** Oink 1.4.2 (https://github.com/jcarlosroldan/oink): single-file PHP API **/
 namespace oink;
 
 $data; $error; $_debug;
@@ -94,15 +94,9 @@ function any($key, $optional=false, $default=null, $from_param=true, $tell_defau
 		$res = $key;
 		$is_set = isset($res);
 	}
-	if ($is_set) {
-		return $tell_default ? [$res, false] : $res;
-	} else {
-		if ($optional) {
-			return $tell_default ? [$default, true] : $default;
-		} else {
-			check(false, "notSet", $key);
-		}
-	}
+	if ($is_set) return $tell_default ? [$res, false] : $res;
+	if ($optional) return $tell_default ? [$default, true] : $default;
+	check(false, "notSet", $key);
 }
 
 function bool($key, $optional=false, $default=null, $from_param=true, $tell_default=false) {
