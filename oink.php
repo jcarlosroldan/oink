@@ -1,5 +1,5 @@
 <?php
-/** Oink 1.4.0 (https://github.com/jcarlosroldan/oink): single-file PHP API **/
+/** Oink 1.4.1 (https://github.com/jcarlosroldan/oink): single-file PHP API **/
 namespace oink;
 
 $data; $error; $_debug;
@@ -131,10 +131,7 @@ function number($key, $min=null, $max=null, $integer=false, $optional=false, $de
 }
 
 function id($key, $allow_zero=false, $optional=false, $default=null, $from_param=true, $tell_default=false) {
-	[$res, $is_default] = any($key, $optional, $default, $from_param, true);
-	if ($is_default) return $tell_default ? [$res, true] : $res;
-	$res = number($res, min: $allow_zero ? 0 : 1, integer: true, optional: false, from_param: false);
-	return $tell_default ? [$res, false] : $res;
+	return number($key, min: $allow_zero ? 0 : 1, integer: true, optional: $optional, default: $default, from_param: $from_param, tell_default: $tell_default);
 }
 
 function str($key, $min=null, $max=null, $pattern=null, $optional=false, $default=null, $from_param=true, $tell_default=false) {
