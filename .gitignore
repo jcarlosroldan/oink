@@ -1,2 +1,3 @@
 **/data.db
-examples/gallery/images/**
+examples/gallery/images/
+.DS_Store
