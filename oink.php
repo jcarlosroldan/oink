@@ -1,5 +1,5 @@
 <?php
-/** Oink 1.3.1 (https://github.com/jcarlosroldan/oink): single-file PHP API **/
+/** Oink 1.4.0 (https://github.com/jcarlosroldan/oink): single-file PHP API **/
 namespace oink;
 
 $data; $error; $_debug;
@@ -51,7 +51,7 @@ function get_data($path, $base_path, $allow_get) {
 		unset($res[$key]);
 		$res[strtolower(trim($key))] = $value;
 	}
-	$res["ip"] = in_array("X-Forwarded-For", $headers) ? $headers["X-Forwarded-For"] : $_SERVER["REMOTE_ADDR"];
+	$res["ip"] = $_SERVER["REMOTE_ADDR"];
 	$res["method"] = $_SERVER['REQUEST_METHOD'];
 	$res['path'] = str_replace("/", "_", trim(substr($path, strlen($base_path)), "/"));
 	$res['output_format'] = "json";
