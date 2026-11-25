@@ -22,7 +22,7 @@ Oink\serve('endpoints.php');
 **endpoints.php**
 ```php
 require_once 'db.php';  // Your database functions
-use function Oink\{str, enum, id, email};
+use function Oink\{str, enum, id, email, check};
 
 function posts() {
     $page = id("page", default: 1, optional: true);

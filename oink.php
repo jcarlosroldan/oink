@@ -1,22 +1,21 @@
 <?php
-/** Oink 1.4.2 (https://github.com/jcarlosroldan/oink): single-file PHP API **/
+/** Oink 2.0.0 (https://github.com/jcarlosroldan/oink): single-file PHP API **/
 namespace oink;
 
-$data; $error; $_debug;
-
-function serve($endpoints_path, $path=null, $debug=false, $base_path="/api/", $escape_unicode=false, $allow_get=false) {
+function serve($endpoints_path, $path=null, $debug=false, $base_path="/api/", $escape_unicode=false, $allow_get=false, $allowed_sites=["same-origin"]) {
 	global $data, $error, $_debug;
 	try {
 		$_debug = $debug;
-		if ($path === null) $path = strtolower(explode("?", $_SERVER['REQUEST_URI'], 2)[0]);
+		if ($path === null) $path = explode("?", $_SERVER['REQUEST_URI'], 2)[0];
 		if (strpos($path, $base_path) !== 0) return;
+		if (isset($_SERVER["HTTP_SEC_FETCH_SITE"]) && !in_array($_SERVER["HTTP_SEC_FETCH_SITE"], $allowed_sites)) exit(http_response_code(403));
 		$data = get_data($path, $base_path, $allow_get);
 		require_once $endpoints_path;
-		$res = null;
 		$endpoints_path_abs = realpath($endpoints_path);
+		$endpoint = strtolower(str_replace("-", "_", $data['path']));
 		$found = false;
 		foreach (get_defined_functions()["user"] as $e) {
-			if ($e[0] !== "_" && realpath((new \ReflectionFunction($e))->getFileName()) === $endpoints_path_abs && ($e === $data['path'] || $e === "get_" . $data['path'])) {
+			if ($e[0] !== "_" && realpath((new \ReflectionFunction($e))->getFileName()) === $endpoints_path_abs && ($e === $endpoint || $e === "get_" . $endpoint)) {
 				$found = true;
 				$res = $e();
 				break;
@@ -38,15 +37,15 @@ function serve($endpoints_path, $path=null, $debug=false, $base_path="/api/", $e
 	} else {
 		header("Content-Type: application/json");
 		if (is_null($res)) $res = ["success" => true];
-		exit(json_encode($res, $escape_unicode ? 0 : JSON_UNESCAPED_UNICODE));
+		echo json_encode($res, $escape_unicode ? 0 : JSON_UNESCAPED_UNICODE);
 	}
+	exit;
 }
 
 function get_data($path, $base_path, $allow_get) {
-	$headers = getallheaders();
-	$res = array_merge($headers, $_COOKIE, $_FILES, $allow_get ? $_GET : [], $_POST);
+	$res = array_merge(getallheaders(), $_COOKIE, $_FILES, $allow_get ? $_GET : [], $_POST);
 	$json = json_decode(file_get_contents("php://input"), true);
-	if (isset($json)) $res = array_merge($res, $json);
+	if (is_array($json)) $res = array_merge($res, $json);
 	foreach ($res as $key => $value) {
 		unset($res[$key]);
 		$res[strtolower(trim($key))] = $value;
@@ -102,6 +101,7 @@ function any($key, $optional=false, $default=null, $from_param=true, $tell_defau
 function bool($key, $optional=false, $default=null, $from_param=true, $tell_default=false) {
 	[$res, $is_default] = any($key, $optional, $default, $from_param, true);
 	if ($is_default) return $tell_default ? [$res, true] : $res;
+	$res = filter_var($res, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE);
 	check(is_bool($res), "notBoolean", $key);
 	return $tell_default ? [$res, false] : $res;
 }
@@ -109,16 +109,18 @@ function bool($key, $optional=false, $default=null, $from_param=true, $tell_defa
 function enum($key, $values, $optional=false, $default=null, $from_param=true, $tell_default=false) {
 	[$res, $is_default] = any($key, $optional, $default, $from_param, true);
 	if ($is_default) return $tell_default ? [$res, true] : $res;
-	check(in_array($res, $values), "invalidValue", $key, $values);
-	return $tell_default ? [$res, false] : $res;
+	check(is_scalar($res), "invalidValue", $key, $values);
+	$index = array_search(strval($res), array_map("strval", $values), true);
+	check($index !== false, "invalidValue", $key, $values);
+	return $tell_default ? [$values[$index], false] : $values[$index];
 }
 
 function number($key, $min=null, $max=null, $integer=false, $optional=false, $default=null, $from_param=true, $tell_default=false) {
 	[$res, $is_default] = any($key, $optional, $default, $from_param, true);
 	if ($is_default) return $tell_default ? [$res, true] : $res;
 	check(is_numeric($res), "notNumber", $key);
-	$res = floatval($res);
-	if ($integer) check($res == intval($res), "notInteger", $key);
+	if ($integer) check(floatval($res) == intval($res), "notInteger", $key);
+	$res = $integer ? intval($res) : floatval($res);
 	if (isset($min)) check($res >= $min, "tooSmall", $key, $min);
 	if (isset($max)) check($res <= $max, "tooBig", $key, $max);
 	return $tell_default ? [$res, false] : $res;
@@ -132,8 +134,8 @@ function str($key, $min=null, $max=null, $pattern=null, $optional=false, $defaul
 	[$res, $is_default] = any($key, $optional, $default, $from_param, true);
 	if ($is_default) return $tell_default ? [$res, true] : $res;
 	check(is_string($res), "notString", $key);
-	if (isset($min)) check(strlen($res) >= $min, "tooShort", $key, $min);
-	if (isset($max)) check(strlen($res) <= $max, "tooLong", $key, $max);
+	if (isset($min)) check(iconv_strlen($res) >= $min, "tooShort", $key, $min);
+	if (isset($max)) check(iconv_strlen($res) <= $max, "tooLong", $key, $max);
 	if (isset($pattern)) check(preg_match($pattern, $res), "invalidFormat", $key);
 	return $tell_default ? [$res, false] : $res;
 }
@@ -148,8 +150,7 @@ function email($key, $optional=false, $default=null, $from_param=true, $tell_def
 function datetime($key, $format="Y-m-d H:i:s", $timezone='UTC', $optional=false, $default=null, $from_param=true, $tell_default=false) {
 	[$res, $is_default] = any($key, $optional, $default, $from_param, true);
 	if ($is_default) return $tell_default ? [$res, true] : $res;
-	check($res !== null, "invalidDatetime", $key, $format);
-	$timezone = $timezone === null ? null : new \DateTimeZone($timezone);
+	if ($timezone !== null) $timezone = new \DateTimeZone($timezone);
 	$res = \DateTime::createFromFormat($format, $res, $timezone);
 	check($res !== false, "invalidDatetime", $key, $format);
 	return $tell_default ? [$res, false] : $res;
@@ -158,7 +159,7 @@ function datetime($key, $format="Y-m-d H:i:s", $timezone='UTC', $optional=false,
 function file($key, $extensions=null, $max_size=null, $optional=false, $default=null, $from_param=true, $tell_default=false) {
 	[$res, $is_default] = any($key, $optional, $default, $from_param, true);
 	if ($is_default) return $tell_default ? [$res, true] : $res;
-	check(is_array($res) && isset($res["name"]) && isset($res["type"]) && isset($res["tmp_name"]) && isset($res["error"]) && isset($res["size"]), "invalidFile", $key);
+	check(isset($res["tmp_name"]) && is_uploaded_file($res["tmp_name"]), "invalidFile", $key);
 	if (isset($max_size)) check($res["size"] <= $max_size, "fileTooBig", $key, $max_size);
 	$res["extension"] = strtolower(pathinfo($res["name"], PATHINFO_EXTENSION));
 	if (isset($extensions)) {

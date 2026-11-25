@@ -12,6 +12,7 @@ It is the entrypoint of the library. It will read the endpoints script, and rout
 | `base_path` | string | `/api/` | All requests must start with this path to be routed, and it will be removed from the endpoint name. |
 | `escape_unicode` | bool | `false` | If set to `true`, the JSON response will escape all Unicode characters. |
 | `allow_get` | bool | `false` | If set to `true`, the GET parameters will be allowed. |
+| `allowed_sites` | array | `["same-origin"]` | Allowed `Sec-Fetch-Site` values for incoming requests, either `same-origin`, `same-site`, `cross-site` or `none`. Not listed values will be rejected with a 403. |
 
 ## Routing
 
@@ -32,7 +33,7 @@ This is a simple and effective way to define the endpoints, but it has some limi
 
 ## Parameters
 
-Parameters are pieces of data that come from the user. It can be a query parameter from a GET URL, a form data from a POST request, a JSON object, a cookie, or even a header. The `serve` method will read these parameters and merge them into a single array, all lowercased. In case of collision, the priority will be as follows (rightmost will prevail): json, post, get, files, cookies, headers. GET parameters are disabled by default, but they can be enabled by passing `allow_get: true` to `serve`.
+Parameters are pieces of data that come from the user. It can be a query parameter from a GET URL, a form data from a POST request, a JSON object, a cookie, or even a header. The `serve` method will read these parameters and merge them into a single array, all lowercased. In case of collision, the priority will be as follows (rightmost will prevail): headers, cookies, files, get, post, json. GET parameters are disabled by default, but they can be enabled by passing `allow_get: true` to `serve`.
 
 Besides these parameters, the `serve` method will also add the following ones:
 
@@ -49,6 +50,22 @@ Merging all parameters into a single array is not conventional, and it requires 
 * However, it could lead to CSRF attacks if GET parameters are enabled, since someone could craft a link like `your.website/account/delete?confirm=true` and trick the user into clicking it. It is advised to keep GET params disabled, but if enable them, you should consider using a CSRF token.
 * If you customize your environment (web server, PHP configuration, etc.) to set some specific headers, they might be overwritten by the parameters.
 
+## Validators
+
+Each validator reads a parameter, checks it and returns it, or fails with one of the [errors](#errors). All of them take `optional` and `default`: a missing optional parameter returns `default` without being checked.
+
+| Function | Accepts | Returns |
+| - | - | - |
+| `any` | Anything that is set | The value as it came |
+| `bool` | JSON booleans, or `true`, `1`, `on`, `yes`, `false`, `0`, `off`, `no` and an empty string | A boolean |
+| `enum` | A value whose text matches one of `values` exactly, so the form value `"10"` matches `10` but `"010"` does not | The matching element of `values` |
+| `number` | A number or numeric string between `min` and `max`, and a whole one if `integer` is set | An integer if `integer` is set, a float otherwise |
+| `id` | A whole number from 1, or from 0 with `allow_zero` | An integer |
+| `str` | A string whose length in characters is between `min` and `max` and that matches `pattern` | The string |
+| `email` | A valid email address | The string |
+| `datetime` | A string in `format`, read in `timezone` | A `DateTime` |
+| `file` | A file uploaded in this request, with one of `extensions` and at most `max_size` bytes | The `$_FILES` entry plus its lowercase `extension` |
+
 ## Errors
 
 All error codes, params and explanations are defined in the following table. It is advised to follow the same format when calling `check`, so that an homogeneous i18n is possible at the frontend side.
@@ -58,8 +75,8 @@ All error codes, params and explanations are defined in the following table. It 
 | 400 | fileTooBig | parameter, max_size | The {parameter} is too big. Maximum size is {max_size}. |
 | 400 | invalidDatetime | parameter, format | The {parameter} is not a valid datetime. Expected format is {format}. |
 | 400 | invalidEmail | parameter | The {parameter} is not a valid email address. |
-| 400 | invalidExtension | extension, allowed_exts | The file has an invalid extension. Allowed extensions are {allowed_exts}. |
-| 400 | invalidFile | parameter | The {parameter} is an invalid file. |
+| 400 | invalidExtension | parameter, allowed_exts | The {parameter} has an invalid extension. Allowed extensions are {allowed_exts}. |
+| 400 | invalidFile | parameter | The {parameter} is not a file uploaded in this request. |
 | 400 | invalidFormat | parameter | The {parameter} has an invalid format. |
 | 400 | invalidValue | parameter, allowed_values | The {parameter} has an invalid value. Allowed values are {allowed_values}. |
 | 400 | notBoolean | parameter | The {parameter} is not a boolean value. |
@@ -79,6 +96,20 @@ All error codes, params and explanations are defined in the following table. It 
 \*The argument is an empty string when not in debug mode.
 
 ## Changelog
+
+### 2.0.0 Security and validator fixes
+
+* BREAKING requests coming from other websites are rejected, unless allowed with the new `allowed_sites` parameter.
+* BREAKING enums no longer accept true for any value, they compare values as text.
+* BREAKING booleans can now come from forms, as true, 1 or on.
+* BREAKING ids and integer numbers are returned as integers instead of floats.
+* BREAKING dashes in the URL are routed as underscores, so `/user-name` calls `user_name`.
+* FIX uploaded files could be faked with a server path in the request body.
+* FIX sent files had the rest of the page appended to them.
+* FIX string lengths counted bytes instead of characters.
+* FIX JSON bodies that weren't objects caused a 500.
+* FIX filenames in the URL were lowercased.
+* Documented the validators and fixed the parameter priority order.
 
 ### 1.2.1 File serving adjustments
 
