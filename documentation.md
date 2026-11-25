@@ -90,12 +90,18 @@ All error codes, params and explanations are defined in the following table. It 
 | 400 | tooLong | parameter, max_length | The {parameter} is too long. Maximum length is {max_length}. |
 | 400 | tooShort | parameter, min_length | The {parameter} is too short. Minimum length is {min_length}. |
 | 400 | tooSmall | parameter, min | The {parameter} is too small. Minimum value is {min}. |
-| 400 | unknownEndpoint | endpoint* | No endpoint called {endpoint}. |
+| 404 | unknownEndpoint | endpoint* | No endpoint called {endpoint}. |
 | 500 | unexpectedError | trace* | An unexpected error occurred with the following trace: {trace}. |
 
 \*The argument is an empty string when not in debug mode.
 
 ## Changelog
+
+### 2.1.0 Logging and status codes
+
+* Unexpected errors are written to the server's error log.
+* FIX unknown endpoints returned 400 instead of 404.
+* JSON responses declare their charset as UTF-8.
 
 ### 2.0.0 Security and validator fixes
 

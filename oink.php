@@ -1,5 +1,5 @@
 <?php
-/** Oink 2.0.0 (https://github.com/jcarlosroldan/oink): single-file PHP API **/
+/** Oink 2.1.0 (https://github.com/jcarlosroldan/oink): single-file PHP API **/
 namespace oink;
 
 function serve($endpoints_path, $path=null, $debug=false, $base_path="/api/", $escape_unicode=false, $allow_get=false, $allowed_sites=["same-origin"]) {
@@ -24,18 +24,19 @@ function serve($endpoints_path, $path=null, $debug=false, $base_path="/api/", $e
 		check($found, "unknownEndpoint", $_debug ? $data['path'] : "");
 	} catch (\AssertionError $e) {
 		$data["output_format"] = "json";
-		http_response_code(400);
+		http_response_code($error["error"] === "unknownEndpoint" ? 404 : 400);
 		$res = $error;
 	} catch (\Throwable $e) {
+		error_log((string) $e);
 		$data["output_format"] = "json";
 		http_response_code(500);
-		$res = ["error" => "unexpectedError", "args" => $_debug ? [$e->__toString()] : []];
+		$res = ["error" => "unexpectedError", "args" => $_debug ? [(string) $e] : []];
 	}
 	if ($data["output_format"] === "file") {
 		header("Content-Type: application/octet-stream");
 		readfile($data["filename"]);
 	} else {
-		header("Content-Type: application/json");
+		header("Content-Type: application/json; charset=utf-8");
 		if (is_null($res)) $res = ["success" => true];
 		echo json_encode($res, $escape_unicode ? 0 : JSON_UNESCAPED_UNICODE);
 	}
