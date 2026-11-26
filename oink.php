@@ -1,5 +1,5 @@
 <?php
-/** Oink 2.1.0 (https://github.com/jcarlosroldan/oink): single-file PHP API **/
+/** Oink 2.2.0 (https://github.com/jcarlosroldan/oink): single-file PHP API **/
 namespace oink;
 
 function serve($endpoints_path, $path=null, $debug=false, $base_path="/api/", $escape_unicode=false, $allow_get=false, $allowed_sites=["same-origin"]) {
@@ -44,7 +44,7 @@ function serve($endpoints_path, $path=null, $debug=false, $base_path="/api/", $e
 }
 
 function get_data($path, $base_path, $allow_get) {
-	$res = array_merge(getallheaders(), $_COOKIE, $_FILES, $allow_get ? $_GET : [], $_POST);
+	$res = array_merge($_COOKIE, getallheaders(), $_FILES, $allow_get ? $_GET : [], $_POST);
 	$json = json_decode(file_get_contents("php://input"), true);
 	if (is_array($json)) $res = array_merge($res, $json);
 	foreach ($res as $key => $value) {

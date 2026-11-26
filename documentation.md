@@ -33,7 +33,7 @@ This is a simple and effective way to define the endpoints, but it has some limi
 
 ## Parameters
 
-Parameters are pieces of data that come from the user. It can be a query parameter from a GET URL, a form data from a POST request, a JSON object, a cookie, or even a header. The `serve` method will read these parameters and merge them into a single array, all lowercased. In case of collision, the priority will be as follows (rightmost will prevail): headers, cookies, files, get, post, json. GET parameters are disabled by default, but they can be enabled by passing `allow_get: true` to `serve`.
+Parameters are pieces of data that come from the user. It can be a query parameter from a GET URL, a form data from a POST request, a JSON object, a cookie, or even a header. The `serve` method will read these parameters and merge them into a single array, all lowercased. In case of collision, the priority will be as follows (rightmost will prevail): cookies, headers, files, get, post, json. GET parameters are disabled by default, but they can be enabled by passing `allow_get: true` to `serve`.
 
 Besides these parameters, the `serve` method will also add the following ones:
 
@@ -96,6 +96,10 @@ All error codes, params and explanations are defined in the following table. It 
 \*The argument is an empty string when not in debug mode.
 
 ## Changelog
+
+### 2.2.0 Headers over cookies
+
+* BREAKING headers now prevail over cookies, so a cookie set from a sibling subdomain can no longer replace a header such as `Authorization`.
 
 ### 2.1.0 Logging and status codes
 
